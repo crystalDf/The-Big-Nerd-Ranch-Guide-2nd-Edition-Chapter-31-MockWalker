@@ -16,9 +16,14 @@ import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 public class MockWalkerFragment extends Fragment {
+
     @InjectView(R.id.start_button) CompoundButton mStartButton;
     private CompositeSubscription mServiceSubscriptions = new CompositeSubscription();
     private Intent mServiceIntent;
+
+    public static MockWalkerFragment newInstance() {
+        return new MockWalkerFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,4 +71,5 @@ public class MockWalkerFragment extends Fragment {
             mStartButton.setChecked(false);
         }
     }
+
 }

@@ -13,13 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MockWalk extends HandlerThread {
+
     private static final String TAG = "MockWalk";
-    private boolean mEnabled = true;
-    private Handler mHandler;
-    private GoogleApiClient mClient;
-    private List<Location> mLocations;
-    private int mCurrentLocationIndex = 0;
+
     private static final long PERIOD_LENGTH_MS = 1000;
+
+    private GoogleApiClient mGoogleApiClient;
+    private List<Location> mLocations;
+
+    private Handler mHandler;
+
+    private boolean mEnabled = true;
+
+    private int mCurrentLocationIndex = 0;
 
     private Runnable mLocationUpdate = new Runnable() {
         @Override
@@ -33,27 +39,11 @@ public class MockWalk extends HandlerThread {
 
     public MockWalk(GoogleApiClient client) {
         super("MockWalk");
-        mClient = client;
+
+        mGoogleApiClient = client;
         mLocations = getLocationData();
-        updateClientMockState();
-    }
-
-    public boolean isEnabled() {
-        return mEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        mEnabled = enabled;
-        if (isEnabled()) {
-            scheduleNextUpdate();
-        }
 
         updateClientMockState();
-    }
-
-    private void updateClientMockState() {
-        LocationServices.FusedLocationApi
-                .setMockMode(mClient, isEnabled());
     }
 
     @Override
@@ -70,6 +60,25 @@ public class MockWalk extends HandlerThread {
         return super.quit();
     }
 
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+
+        mEnabled = enabled;
+
+        if (isEnabled()) {
+            scheduleNextUpdate();
+        }
+
+        updateClientMockState();
+    }
+
+    private void updateClientMockState() {
+        LocationServices.FusedLocationApi.setMockMode(mGoogleApiClient, isEnabled());
+    }
+
     private void scheduleNextUpdate() {
         if (isAlive() && !isInterrupted() && isEnabled()) {
             mHandler.postDelayed(this.mLocationUpdate, PERIOD_LENGTH_MS);
@@ -80,15 +89,17 @@ public class MockWalk extends HandlerThread {
         int nextIndex = (mCurrentLocationIndex + 1) % mLocations.size();
 
         Location nextLocation = new Location(mLocations.get(nextIndex));
+
         nextLocation.setTime(System.currentTimeMillis());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             nextLocation.setElapsedRealtimeNanos(System.nanoTime());
         }
 
-        LocationServices.FusedLocationApi
-                .setMockLocation(mClient, nextLocation);
+        LocationServices.FusedLocationApi.setMockLocation(mGoogleApiClient, nextLocation);
 
         Log.i(TAG, "New location: " + nextLocation);
+
         mCurrentLocationIndex = nextIndex;
     }
 
@@ -103,7 +114,7 @@ public class MockWalk extends HandlerThread {
     }
 
     private List<Location> getLocationData() {
-        List<Location> locations = new ArrayList<Location>();
+        List<Location> locations = new ArrayList<>();
 
         locations.add(newLocation(33.751459, -84.3238770, 309));
         locations.add(newLocation(33.7514752, -84.3238663, 304));
@@ -249,4 +260,5 @@ public class MockWalk extends HandlerThread {
 
         return locations;
     }
+
 }

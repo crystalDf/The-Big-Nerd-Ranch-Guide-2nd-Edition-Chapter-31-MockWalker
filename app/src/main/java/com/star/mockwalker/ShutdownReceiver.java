@@ -11,4 +11,5 @@ public class ShutdownReceiver extends BroadcastReceiver {
         Intent shutdown = new Intent(context, MockWalkerService.class);
         context.stopService(shutdown);
     }
+
 }

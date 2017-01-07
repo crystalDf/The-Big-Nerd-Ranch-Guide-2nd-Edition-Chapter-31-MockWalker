@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MockWalkerActivity extends SingleFragmentActivity {
 
@@ -13,26 +13,26 @@ public class MockWalkerActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        return new MockWalkerFragment();
+        return MockWalkerFragment.newInstance();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+
+        int errorCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
 
         if (errorCode != ConnectionResult.SUCCESS) {
-            Dialog errorDialog = GooglePlayServicesUtil
-                    .getErrorDialog(errorCode, this, REQUEST_ERROR,
-                            new DialogInterface.OnCancelListener() {
-
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    // Leave if services are unavailable.
-                                    finish();
-                                }
-                            });
+            Dialog errorDialog = googleApiAvailability.getErrorDialog(this, errorCode,
+                    REQUEST_ERROR, new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                                // Leave if services are unavailable.
+                                finish();
+                            }
+                        });
 
             errorDialog.show();
         }

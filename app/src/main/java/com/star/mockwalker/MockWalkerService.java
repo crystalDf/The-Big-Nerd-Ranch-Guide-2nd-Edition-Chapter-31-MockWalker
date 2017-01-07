@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 public class MockWalkerService extends Service {
+
     private static final int NOTIFICATION_ID = 1;
     private static final int PENDING_SHUTDOWN_ID = 1;
 
@@ -48,6 +49,5 @@ public class MockWalkerService extends Service {
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("" + getClass().getName() + " is not a bindable service");
     }
-
 
 }

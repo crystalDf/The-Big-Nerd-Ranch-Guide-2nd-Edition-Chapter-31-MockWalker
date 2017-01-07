@@ -10,6 +10,7 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 public class MockWalker implements GoogleApiClient.ConnectionCallbacks {
+
     private static MockWalker sMockWalker;
 
     public static synchronized MockWalker get(Context context) {
@@ -73,4 +74,5 @@ public class MockWalker implements GoogleApiClient.ConnectionCallbacks {
     public void onConnectionSuspended(int i) {
 
     }
+
 }
